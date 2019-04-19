@@ -1,4 +1,3 @@
 [submodule "3rd/miniz"]
 	path = 3rd/miniz
 	url = https://github.com/richgel999/miniz.git
-	ignore = dirty
