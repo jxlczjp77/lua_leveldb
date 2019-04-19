@@ -75,7 +75,7 @@ int lvldb_open(lua_State *L) {
     }
 
     if (!s.ok())
-        cerr << "lvldb_open: Error opening creating database: " << s.ToString() << endl;
+        luaL_error(L, "lvldb_open: Error opening creating database: %s", s.ToString().c_str());
     else {
         *(DB**)lua_newuserdata(L, sizeof(DB**)) = db;
         luaL_getmetatable(L, LVLDB_MT_DB);

@@ -185,8 +185,8 @@ int lvldb_batch_lock(lua_State *L) {
 
 int lvldb_batch_set_need_lock(lua_State *L) {
     Batch &batch = *(check_writebatch(L, 1));
-    luaL_checktype(L, 1, LUA_TBOOLEAN);
-    bool b = lua_toboolean(L, 1);
+    luaL_checktype(L, 2, LUA_TBOOLEAN);
+    bool b = lua_toboolean(L, 2);
     std::lock_guard<recursive_mutex> guard(batch.m_mutex.m_mutex);
     batch.m_mutex.m_need_mutex = b;
     return 0;
