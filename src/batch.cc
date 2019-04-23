@@ -33,6 +33,7 @@ void Batch::Put(lua_State *L, const Slice &key, Slice &val, bool compress) {
         value = val.ToString();
     }
 
+    lua_pushinteger(L, value.size());
     auto key_ = key.ToString();
     auto it = m_dels.find(key_);
     if (it != m_dels.end()) {
@@ -142,7 +143,7 @@ int lvldb_batch_put(lua_State *L) {
         compress = lua_toboolean(L, 4);
     }
     batch.Put(L, key, value, compress);
-    return 0;
+    return 1;
 }
 
 int lvldb_batch_get(lua_State *L) {
@@ -247,9 +248,11 @@ int lvldb_batch_close(lua_State *L) {
 
 int lvdb_batch_gc(lua_State *L) {
     Batch *batch = check_writebatch(L, 1);
-    l_unregister_db(batch, [](void *d) {
-        ((Batch *)d)->~Batch();
-    });
+    if (batch) {
+        l_unregister_db(batch, [](void *d) {
+            ((Batch *)d)->~Batch();
+        });
+    }
     return 0;
 }
 
