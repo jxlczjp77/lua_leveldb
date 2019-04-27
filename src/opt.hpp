@@ -1,14 +1,8 @@
 ﻿#pragma once
 #include <sstream>
 
-#include "lua.hpp"
 #include "lib.hpp"
 #include "utils.hpp"
-
-// Bitwise comparator impl
-#include <leveldb/comparator.h>
-
-using namespace leveldb;
 
 int get_int(lua_State *L, void *v);
 int set_int(lua_State *L, void *v);

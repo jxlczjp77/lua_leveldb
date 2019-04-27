@@ -1,9 +1,6 @@
 ﻿#pragma once
-#include "lua.hpp"
 #include "lib.hpp"
 #include "utils.hpp"
-
-using namespace leveldb;
 
 Iterator *check_iter(lua_State *L);
 

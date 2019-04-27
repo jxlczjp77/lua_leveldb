@@ -1,14 +1,12 @@
 ﻿#pragma once
 #include <sstream>
 
-#include "lua.hpp"
 #include "lib.hpp"
 #include "utils.hpp"
 #include <mutex>
 #include <unordered_map>
 #include <unordered_set>
 
-using namespace leveldb;
 #define MAX_PARAM_NUM 4
 
 class MyMutex {
@@ -73,4 +71,4 @@ int lvldb_batch_set_str_param(lua_State *L);
 int lvldb_raw_batch_put(lua_State *L);
 int lvldb_raw_batch_del(lua_State *L);
 int lvldb_raw_batch_clear(lua_State *L);
-int lvdb_raw_batch_gc(lua_State *L);
+int lvldb_raw_batch_gc(lua_State *L);

@@ -1,5 +1,4 @@
 ﻿#include "iter.hpp"
-using namespace leveldb;
 
 Iterator *check_iter(lua_State *L) {
     auto ud = (Iterator **)luaL_checkudata(L, 1, LVLDB_MT_ITER);

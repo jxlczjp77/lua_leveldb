@@ -1,7 +1,5 @@
 ﻿#include "db.hpp"
 #include "batch.hpp"
-using namespace std;
-using namespace leveldb;
 
 DB *check_database(lua_State *L, int index) {
     return *(DB **)luaL_checkudata(L, index, LVLDB_MT_DB);
@@ -47,49 +45,14 @@ int lvldb_database_get(lua_State *L) {
 
 int lvldb_database_has(lua_State *L) {
     DB *db = check_database(L, 1);
-
     Slice key = lua_to_slice(L, 2);
-    string value;
-
-    Status s = db->Get(lvldb_ropt(L, 3), key, &value);
-
+    Status s = db->Get(lvldb_ropt(L, 3), key, nullptr);
     if (s.ok()) {
         lua_pushboolean(L, true);
     } else {
         lua_pushboolean(L, false);
     }
-
     return 1;
-}
-
-int lvldb_database_set(lua_State *L) {
-    DB *db = check_database(L, 1);
-    Slice value = lua_to_slice(L, 2);
-
-#ifdef __x86_64__
-    uint64_t i = 1;
-#else
-    int i = 1;
-#endif
-
-    bool found = false;
-    Iterator *it = db->NewIterator(lvldb_ropt(L, 3));
-
-    for (it->SeekToLast(); it->Valid(); it->Prev()) {
-        if (value == it->value()) {
-            found = true;
-            break;
-        }
-        i++;
-    }
-
-    if (!found) {
-        Status s = db->Put(WriteOptions(), "0", value);
-        assert(s.ok());
-    }
-    assert(it->status().ok());
-    delete it;
-    return 0;
 }
 
 int lvldb_database_del(lua_State *L) {
@@ -101,16 +64,13 @@ int lvldb_database_del(lua_State *L) {
     else {
         lua_pushboolean(L, false);
     }
-
     return 1;
 }
 
 int lvldb_database_iterator(lua_State *L) {
     DB *db = check_database(L, 1);
-
     Iterator *it = db->NewIterator(lvldb_ropt(L, 2));
     *(Iterator **)lua_newuserdata(L, sizeof(Iterator **)) = it;
-
     luaL_getmetatable(L, LVLDB_MT_ITER);
     lua_setmetatable(L, -2);
 
@@ -119,7 +79,7 @@ int lvldb_database_iterator(lua_State *L) {
 
 int lvldb_database_write(lua_State *L) {
     DB *db = check_database(L, 1);
-    auto rawbatch = (WriteBatch *)luaL_testudata(L, 2, LVLDB_MT_RAWBATCH);
+    auto rawbatch = (WriteBatch *)luaL_testudata(L, 2, LVLDB_MT_RAW_BATCH);
     if (rawbatch) {
         db->Write(lvldb_wopt(L, 3), rawbatch);
     } else {
@@ -136,22 +96,3 @@ int lvldb_database_snapshot(lua_State *L) {
     return 1;
 }
 
-int lvldb_database_tostring(lua_State *L) {
-    DB *db = check_database(L, 1);
-    ostringstream oss(ostringstream::out);
-    Iterator *it = db->NewIterator(ReadOptions());
-    oss << "DB output:" << endl;
-    it->SeekToFirst();
-    if (!it->Valid())
-        oss << "Database is empty." << endl;
-    else {
-        while (it->Valid()) {
-            oss << it->key().ToString() << " -> " << it->value().ToString() << endl;
-            it->Next();
-        }
-    }
-    assert(it->status().ok());
-    delete it;
-    lua_pushstring(L, oss.str().c_str());
-    return 1;
-}

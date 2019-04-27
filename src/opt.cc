@@ -1,6 +1,5 @@
 ﻿#include "opt.hpp"
 using namespace std;
-using namespace leveldb;
 
 int get_int(lua_State *L, void *v) {
     lua_pushnumber(L, *(int*)v);
@@ -85,7 +84,7 @@ int lvldb_read_options_tostring(lua_State *L) {
     ostringstream oss(ostringstream::out);
     oss << "Verify checksum: " << bool_tostring(ropt->verify_checksums)
         << "\nFill cache: " << bool_tostring(ropt->fill_cache)
-        << "\nUnCompress: " << bool_tostring(ropt->UnCompress)
+        << "\nDeCompress: " << bool_tostring(ropt->UnCompress)
         << "\nSnapshot: " << ropt->snapshot << endl;
     lua_pushstring(L, oss.str().c_str());
     return 1;
@@ -107,3 +106,4 @@ int lvldb_write_options_tostring(lua_State *L) {
 
     return 1;
 }
+

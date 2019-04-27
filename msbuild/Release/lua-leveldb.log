@@ -1,0 +1,24 @@
+﻿  miniz.c
+  miniz_tdef.c
+  miniz_tinfl.c
+  miniz_zip.c
+  batch.cc
+  db.cc
+  iter.cc
+  lua-leveldb.cc
+  meta.cc
+  opt.cc
+  utils.cc
+    正在创建库 E:\work\lua\lua_leveldb\Release\lua-leveldb.lib 和对象 E:\work\lua\lua_leveldb\Release\lua-leveldb.exp
+batch.obj : error LNK2001: 无法解析的外部符号 "public: void __thiscall leveldb::WriteBatch::Clear(void)" (?Clear@WriteBatch@leveldb@@QAEXXZ)
+batch.obj : error LNK2001: 无法解析的外部符号 "public: void __thiscall leveldb::WriteBatch::Delete(class leveldb::Slice const &)" (?Delete@WriteBatch@leveldb@@QAEXABVSlice@2@@Z)
+batch.obj : error LNK2001: 无法解析的外部符号 "public: void __thiscall leveldb::WriteBatch::Put(class leveldb::Slice const &,class leveldb::Slice const &)" (?Put@WriteBatch@leveldb@@QAEXABVSlice@2@0@Z)
+batch.obj : error LNK2001: 无法解析的外部符号 "public: __thiscall leveldb::WriteBatch::~WriteBatch(void)" (??1WriteBatch@leveldb@@QAE@XZ)
+batch.obj : error LNK2001: 无法解析的外部符号 "public: __thiscall leveldb::WriteBatch::WriteBatch(void)" (??0WriteBatch@leveldb@@QAE@XZ)
+db.obj : error LNK2001: 无法解析的外部符号 "private: static char const * __cdecl leveldb::Status::CopyState(char const *)" (?CopyState@Status@leveldb@@CAPBDPBD@Z)
+lua-leveldb.obj : error LNK2001: 无法解析的外部符号 "class leveldb::FilterPolicy const * __cdecl leveldb::NewBloomFilterPolicy(int)" (?NewBloomFilterPolicy@leveldb@@YAPBVFilterPolicy@1@H@Z)
+lua-leveldb.obj : error LNK2001: 无法解析的外部符号 "class leveldb::Status __cdecl leveldb::RepairDB(class std::basic_string<char,struct std::char_traits<char>,class std::allocator<char> > const &,struct leveldb::Options const &)" (?RepairDB@leveldb@@YA?AVStatus@1@ABV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@ABUOptions@1@@Z)
+lua-leveldb.obj : error LNK2001: 无法解析的外部符号 "public: static class leveldb::Status __cdecl leveldb::DB::Open(struct leveldb::Options const &,class std::basic_string<char,struct std::char_traits<char>,class std::allocator<char> > const &,class leveldb::DB * *)" (?Open@DB@leveldb@@SA?AVStatus@2@ABUOptions@2@ABV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@PAPAV12@@Z)
+lua-leveldb.obj : error LNK2001: 无法解析的外部符号 "public: __thiscall leveldb::Options::Options(void)" (??0Options@leveldb@@QAE@XZ)
+lua-leveldb.obj : error LNK2001: 无法解析的外部符号 "public: class std::basic_string<char,struct std::char_traits<char>,class std::allocator<char> > __thiscall leveldb::Status::ToString(void)const " (?ToString@Status@leveldb@@QBE?AV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@XZ)
+E:\work\lua\lua_leveldb\Release\lua-leveldb.dll : fatal error LNK1120: 11 个无法解析的外部命令

@@ -1,6 +1,4 @@
 ﻿#include "utils.hpp"
-using namespace std;
-using namespace leveldb;
 
 Slice lua_to_slice(lua_State *L, int i) {
     size_t l = 0;
@@ -26,9 +24,7 @@ string filter_tostring(const FilterPolicy *fp) {
 }
 
 Options *check_options(lua_State *L, int index) {
-    Options *opt;
-    opt = (Options*)luaL_checkudata(L, index, LVLDB_MT_OPT);
-    return opt;
+    return (Options*)luaL_checkudata(L, index, LVLDB_MT_OPT);
 }
 
 MyReadOptions *check_read_options(lua_State *L, int index) {
@@ -37,18 +33,15 @@ MyReadOptions *check_read_options(lua_State *L, int index) {
 }
 
 MyWriteOptions *check_write_options(lua_State *L, int index) {
-    void *ud = luaL_checkudata(L, index, LVLDB_MT_WOPT);
-    return (MyWriteOptions *)ud;
+    return (MyWriteOptions *)luaL_checkudata(L, index, LVLDB_MT_WOPT);
 }
 
 WriteBatch *check_raw_writebatch(lua_State *L, int index) {
-    void *ud = luaL_checkudata(L, index, LVLDB_MT_RAWBATCH);
-    return (WriteBatch *)ud;
+    return (WriteBatch *)luaL_checkudata(L, index, LVLDB_MT_RAW_BATCH);
 }
 
 Batch *check_writebatch(lua_State *L, int index) {
-    void *ud = luaL_checkudata(L, index, LVLDB_MT_BATCH);
-    return *(Batch **)ud;
+    return *(Batch **)luaL_checkudata(L, index, LVLDB_MT_BATCH);
 }
 
 void miniz_compress(lua_State *L, const char *data, size_t len) {

@@ -7,17 +7,15 @@
 #include <miniz.h>
 
 // Lua Meta-tables names
-#define LVLDB_MOD_NAME		"leveldb"
-#define LVLDB_MT_OPT		"leveldb.opt"
-#define LVLDB_MT_ROPT		"leveldb.ropt"
-#define LVLDB_MT_WOPT		"leveldb.wopt"
-#define LVLDB_MT_DB			"leveldb.db"
-#define LVLDB_MT_ITER		"leveldb.iter"
-#define LVLDB_MT_RAWBATCH	"leveldb.rawbtch"
-#define LVLDB_MT_BATCH		"leveldb.btch"
+#define LVLDB_MOD_NAME          "leveldb"
+#define LVLDB_MT_OPT            "leveldb.opt"
+#define LVLDB_MT_ROPT           "leveldb.ropt"
+#define LVLDB_MT_WOPT           "leveldb.wopt"
+#define LVLDB_MT_DB             "leveldb.db"
+#define LVLDB_MT_ITER           "leveldb.iter"
+#define LVLDB_MT_RAW_BATCH      "leveldb.rawbtch"
+#define LVLDB_MT_BATCH          "leveldb.btch"
 
-using namespace std;
-using namespace leveldb;
 class Batch;
 
 struct MyReadOptions : public ReadOptions {
@@ -27,6 +25,7 @@ struct MyReadOptions : public ReadOptions {
 struct MyWriteOptions : public WriteOptions {
     bool Compress;
 };
+
 
 Slice lua_to_slice(lua_State *L, int i);
 string bool_tostring(int boolean);

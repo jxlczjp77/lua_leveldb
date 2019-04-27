@@ -1,15 +1,14 @@
 ﻿#include "lua-leveldb.hpp"
+#include "utils.hpp"
 #include <map>
 #include <mutex>
+#include <chrono>
 
 // Rock info
 #define LUALEVELDB_VERSION "Lua-LevelDB 0.4.0"
 #define LUALEVELDB_COPYRIGHT "Copyright (C) 2012-18, Lua-LevelDB by Marco Pompili (pompilimrc@gmail.com)."
 #define LUALEVELDB_DESCRIPTION "Lua bindings for Google's LevelDB library."
 #define LUALEVELDB_LOGMODE 0
-
-using namespace std;
-using namespace leveldb;
 
 struct DbRef {
     void *db;
@@ -82,7 +81,6 @@ int lvldb_open(lua_State *L) {
         lua_setmetatable(L, -2);
         l_register_db(filename, db);
     }
-
     return 1;
 }
 
@@ -99,9 +97,7 @@ int lvldb_close(lua_State *L) {
 
 int lvldb_options(lua_State *L) {
     Options *optp = (Options *)lua_newuserdata(L, sizeof(Options));
-
-    *(optp) = Options(); // set default values
-
+    new (optp) Options();
     luaL_getmetatable(L, LVLDB_MT_OPT);
     lua_setmetatable(L, -2);
     return 1;
@@ -132,7 +128,7 @@ int lvldb_batch(lua_State *L) {
 int lvldb_raw_batch(lua_State *L) {
     WriteBatch *batchp = (WriteBatch *)lua_newuserdata(L, sizeof(WriteBatch));
     new (batchp) WriteBatch;
-    luaL_getmetatable(L, LVLDB_MT_RAWBATCH);
+    luaL_getmetatable(L, LVLDB_MT_RAW_BATCH);
     lua_setmetatable(L, -2);
     return 1;
 }
@@ -147,9 +143,7 @@ int lvldb_check(lua_State *L) {
 
 int lvldb_repair(lua_State *L) {
     string dbname = luaL_checkstring(L, 1);
-
     Status s = leveldb::RepairDB(dbname, lvldb_opt(L, 2));
-
     if (s.ok())
         lua_pushboolean(L, true);
     else {
@@ -160,15 +154,19 @@ int lvldb_repair(lua_State *L) {
     return 1;
 }
 
-int lvldb_bloom_filter_policy(lua_State *L) {
-    luaL_checktype(L, 1, LUA_TUSERDATA);
-    Options *opt = (Options *)luaL_checkudata(L, 1, LVLDB_MT_OPT);
-    int bits_per_key = (int)lua_tointeger(L, 2);
-    const FilterPolicy *fp = NewBloomFilterPolicy(bits_per_key);
+int lvldb_now(lua_State *L) {
+    auto n = std::chrono::high_resolution_clock::now();
+    auto p = (decltype(n) *)lua_newuserdata(L, sizeof(n));
+    new(p) decltype(n)(n);
+    return 1;
+}
 
-    opt->filter_policy = fp;
-
-    return 0;
+int lvldb_elapsed(lua_State *L) {
+    auto end = std::chrono::high_resolution_clock::now();
+    auto start = (decltype(end) *)lua_touserdata(L, 1);
+    auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(end - *start);
+    lua_pushinteger(L, elapsed.count());
+    return 1;
 }
 
 int lvldb_miniz_compress(lua_State *L) {
@@ -178,7 +176,7 @@ int lvldb_miniz_compress(lua_State *L) {
     return 1;
 }
 
-int lvldb_miniz_uncompress(lua_State *L) {
+int lvldb_miniz_decompress(lua_State *L) {
     size_t l = 0;
     auto p = luaL_checklstring(L, 1, &l);
     miniz_uncompress(L, p, l);
@@ -198,9 +196,10 @@ static const luaL_Reg lvldb_leveldb_m[] = {
     {"repair ", lvldb_repair},
     {"rawbatch", lvldb_raw_batch},
     {"check", lvldb_check},
+    {"now", lvldb_now},
+    {"elapsed", lvldb_elapsed},
     {"mz_compress", lvldb_miniz_compress},
-    {"mz_uncompress", lvldb_miniz_uncompress},
-    {"bloomFilterPolicy", lvldb_bloom_filter_policy},
+    {"mz_decompress", lvldb_miniz_decompress},
     {NULL, NULL} };
 
 // options methods
@@ -249,14 +248,14 @@ static const luaL_Reg lvldb_read_options_meta[] = {
 static const Xet_reg_pre read_options_getters[] = {
     {"verifyChecksum", get_bool, offsetof(MyReadOptions, verify_checksums)},
     {"fillCache", get_bool, offsetof(MyReadOptions, fill_cache)},
-    {"uncompress", get_bool, offsetof(MyReadOptions, UnCompress)},
+    {"decompress", get_bool, offsetof(MyReadOptions, UnCompress)},
     {NULL, NULL} };
 
 // read options setters
 static const Xet_reg_pre read_options_setters[] = {
     {"verifyChecksum", set_bool, offsetof(MyReadOptions, verify_checksums)},
     {"fillCache", set_bool, offsetof(MyReadOptions, fill_cache)},
-    {"uncompress", set_bool, offsetof(MyReadOptions, UnCompress)},
+    {"decompress", set_bool, offsetof(MyReadOptions, UnCompress)},
     {NULL, NULL} };
 
 // write options methods
@@ -282,11 +281,10 @@ static const Xet_reg_pre write_options_setters[] = {
 
 // database methods
 static const luaL_Reg lvldb_database_m[] = {
-    {"__tostring", lvldb_database_tostring},
     {"put", lvldb_database_put},
-    {"set", lvldb_database_set},
-    {"batch", lvldb_batch},
     {"get", lvldb_database_get},
+    {"batch", lvldb_batch},
+    {"close", lvldb_close},
     {"has", lvldb_database_has},
     {"delete", lvldb_database_del},
     {"iterator", lvldb_database_iterator},
@@ -324,13 +322,12 @@ static const luaL_Reg lvldb_batch_m[] = {
     {"__gc", lvdb_batch_gc},
     {NULL, NULL} };
 
-
 // batch methods
 static const luaL_Reg lvldb_raw_batch_m[] = {
     {"put", lvldb_raw_batch_put},
     {"delete", lvldb_raw_batch_del},
     {"clear", lvldb_raw_batch_clear},
-    {"__gc", lvdb_raw_batch_gc},
+    {"__gc", lvldb_raw_batch_gc},
     {NULL, NULL} };
 
 
@@ -350,12 +347,7 @@ extern "C"
         lua_pushliteral(L, LUALEVELDB_DESCRIPTION);
         lua_setfield(L, -2, "_DESCRIPTION");
 
-        // LevelDB functions
-#if LUA_VERSION_NUM > 501
         luaL_setfuncs(L, lvldb_leveldb_m, 0);
-#else
-        luaL_register(L, NULL, lvldb_leveldb_m);
-#endif
 
         // initialize meta-tables methods
         init_metatable(L, LVLDB_MT_DB, lvldb_database_m);
@@ -363,8 +355,8 @@ extern "C"
         init_complex_metatable(L, LVLDB_MT_ROPT, lvldb_read_options_m, lvldb_read_options_meta, read_options_getters, read_options_setters);
         init_complex_metatable(L, LVLDB_MT_WOPT, lvldb_write_options_m, lvldb_write_options_meta, write_options_getters, write_options_setters);
         init_metatable(L, LVLDB_MT_ITER, lvldb_iterator_m);
-        init_metatable(L, LVLDB_MT_RAWBATCH, lvldb_raw_batch_m);
         init_metatable(L, LVLDB_MT_BATCH, lvldb_batch_m);
+        init_metatable(L, LVLDB_MT_RAW_BATCH, lvldb_raw_batch_m);
 
         return 1;
     }

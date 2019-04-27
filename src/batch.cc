@@ -1,6 +1,4 @@
 ﻿#include "batch.hpp"
-using namespace std;
-using namespace leveldb;
 
 Batch::Batch(DB *db) {
     m_db = db;
@@ -272,11 +270,13 @@ int lvldb_raw_batch_put(lua_State *L) {
             luaL_error(L, "compress failed");
         }
         batch.Put(key, Slice((const char *)p, outLen));
+        lua_pushinteger(L, outLen);
         mz_free(p);
     } else {
         batch.Put(key, val);
+        lua_pushinteger(L, val.size());
     }
-    return 0;
+    return 1;
 }
 
 int lvldb_raw_batch_del(lua_State *L) {
@@ -292,7 +292,7 @@ int lvldb_raw_batch_clear(lua_State *L) {
     return 0;
 }
 
-int lvdb_raw_batch_gc(lua_State *L) {
+int lvldb_raw_batch_gc(lua_State *L) {
     WriteBatch *batch = check_raw_writebatch(L, 1);
     batch->~WriteBatch();
     return 0;
