@@ -119,3 +119,4 @@ dkms.conf
 x64
 /msbuild/x64
 /msbuild/Release
+/x64
