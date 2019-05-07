@@ -7,7 +7,7 @@
 #include <unordered_map>
 #include <unordered_set>
 
-#define MAX_PARAM_NUM 4
+#define MAX_PARAM_NUM 32
 
 class MyMutex {
 public:

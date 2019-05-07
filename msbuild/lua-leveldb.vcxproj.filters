@@ -14,7 +14,7 @@
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
     <Filter Include="miniz">
-      <UniqueIdentifier>{5a8c21cf-91bd-4c35-9005-d19fd795f279}</UniqueIdentifier>
+      <UniqueIdentifier>{4eab7f51-1d37-4125-ae09-ffcdc4d4e102}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -30,13 +30,13 @@
     <ClCompile Include="..\src\lua-leveldb.cc">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\meta.cc">
+      <Filter>源文件</Filter>
+    </ClCompile>
     <ClCompile Include="..\src\opt.cc">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="..\src\utils.cc">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\meta.cc">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="..\3rd\miniz\miniz.c">
@@ -66,6 +66,9 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="..\src\lua-leveldb.hpp">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\meta.hpp">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="..\src\opt.hpp">

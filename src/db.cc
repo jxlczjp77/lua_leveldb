@@ -82,6 +82,7 @@ int lvldb_database_write(lua_State *L) {
     auto rawbatch = (WriteBatch *)luaL_testudata(L, 2, LVLDB_MT_RAW_BATCH);
     if (rawbatch) {
         db->Write(lvldb_wopt(L, 3), rawbatch);
+        rawbatch->Clear();
     } else {
         Batch &batch = *(check_writebatch(L, 2));
         batch.Write(L, db);

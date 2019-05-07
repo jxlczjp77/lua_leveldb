@@ -3,6 +3,7 @@
 #include <map>
 #include <mutex>
 #include <chrono>
+#include <sys/timeb.h>
 
 // Rock info
 #define LUALEVELDB_VERSION "Lua-LevelDB 0.4.0"
@@ -169,6 +170,13 @@ int lvldb_elapsed(lua_State *L) {
     return 1;
 }
 
+int lvldb_tick(lua_State *L) {
+    timeb t;
+    ftime(&t);
+    lua_pushinteger(L, t.time * 1000 + t.millitm);
+    return 1;
+}
+
 int lvldb_miniz_compress(lua_State *L) {
     size_t l = 0;
     auto p = luaL_checklstring(L, 1, &l);
@@ -320,10 +328,11 @@ static const luaL_Reg lvldb_leveldb_m[] = {
     {"check", lvldb_check},
     {"now", lvldb_now},
     {"elapsed", lvldb_elapsed},
+    {"tick", lvldb_tick},
     {"mz_compress", lvldb_miniz_compress},
     {"mz_decompress", lvldb_miniz_decompress},
-	{ "base64encode", lb64encode },
-	{ "base64decode", lb64decode },
+	{"base64encode", lb64encode},
+	{"base64decode", lb64decode},
     {NULL, NULL} };
 
 // options methods
