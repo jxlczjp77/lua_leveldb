@@ -79,13 +79,13 @@ int lvldb_database_iterator(lua_State *L) {
 
 int lvldb_database_write(lua_State *L) {
     DB *db = check_database(L, 1);
-    auto rawbatch = (WriteBatch *)luaL_testudata(L, 2, LVLDB_MT_RAW_BATCH);
-    if (rawbatch) {
+    auto ppBatch = (Batch **)luaL_testudata(L, 2, LVLDB_MT_BATCH);
+    if (ppBatch) {
+        (*ppBatch)->Write(L, db);
+    } else {
+        auto rawbatch = check_raw_writebatch(L, 2);
         db->Write(lvldb_wopt(L, 3), rawbatch);
         rawbatch->Clear();
-    } else {
-        Batch &batch = *(check_writebatch(L, 2));
-        batch.Write(L, db);
     }
     return 0;
 }

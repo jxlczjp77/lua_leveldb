@@ -117,7 +117,7 @@ int Batch::GetStringParam(lua_State *L, int idx) {
     return 1;
 }
 
-void Batch::SetIntParam(lua_State *L, int idx, int value) {
+void Batch::SetIntParam(lua_State *L, int idx, int64_t value) {
     std::lock_guard<MyMutex> guard(m_mutex);
     if (idx >= 0 || idx < MAX_PARAM_NUM) {
         m_int_param[idx] = value;
@@ -206,7 +206,7 @@ int lvldb_batch_str_param(lua_State *L) {
 int lvldb_batch_set_int_param(lua_State *L) {
     Batch &batch = *(check_writebatch(L, 1));
     int idx = (int)luaL_checkinteger(L, 2);
-    int value = (int)luaL_checkinteger(L, 3);
+    int64_t value = (int64_t)luaL_checkinteger(L, 3);
     batch.SetIntParam(L, idx, value);
     return 0;
 }

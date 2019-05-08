@@ -72,7 +72,7 @@ int lvldb_options_tostring(lua_State *L) {
 
 int lvldb_read_options(lua_State *L) {
     MyReadOptions *ropt = (MyReadOptions*)lua_newuserdata(L, sizeof(MyReadOptions));
-    *(ropt) = MyReadOptions();
+    new (ropt) MyReadOptions();
     luaL_getmetatable(L, LVLDB_MT_ROPT);
     lua_setmetatable(L, -2);
 
@@ -92,7 +92,7 @@ int lvldb_read_options_tostring(lua_State *L) {
 
 int lvldb_write_options(lua_State *L) {
     MyWriteOptions *wopt = (MyWriteOptions*)lua_newuserdata(L, sizeof(MyWriteOptions));
-    *(wopt) = MyWriteOptions(); // set default values
+    new (wopt) MyWriteOptions(); // set default values
     luaL_getmetatable(L, LVLDB_MT_WOPT);
     lua_setmetatable(L, -2);
     return 1;

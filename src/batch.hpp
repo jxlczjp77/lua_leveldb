@@ -43,14 +43,14 @@ public:
     void Write(lua_State *L, DB *db);
     int GetIntParam(lua_State *L, int idx);
     int GetStringParam(lua_State *L, int idx);
-    void SetIntParam(lua_State *L, int idx, int value);
+    void SetIntParam(lua_State *L, int idx, int64_t value);
     void SetStringParam(lua_State *L, int idx, string &&value);
 
     MyMutex m_mutex;
     WriteBatch m_batch;
     unordered_set<string> m_dels;
     unordered_map<string, string> m_upds;
-    int m_int_param[MAX_PARAM_NUM];
+    int64_t m_int_param[MAX_PARAM_NUM];
     string m_str_param[MAX_PARAM_NUM];
     DB *m_db;
 };
