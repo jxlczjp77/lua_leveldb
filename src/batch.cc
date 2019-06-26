@@ -152,7 +152,10 @@ int lvldb_batch_get(lua_State *L) {
         luaL_checktype(L, 3, LUA_TBOOLEAN);
         uncompress = lua_toboolean(L, 3);
     }
-    return batch.Get(L, key, uncompress);
+    if (!batch.Get(L, key, uncompress)) {
+        lua_pushnil(L);
+    }
+    return 1;
 }
 
 int traceback(lua_State *L) {

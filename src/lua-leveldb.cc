@@ -96,6 +96,12 @@ int lvldb_close(lua_State *L) {
     return 0;
 }
 
+int lvldb_db(lua_State *L) {
+    DB **db = (DB **)luaL_checkudata(L, 1, LVLDB_MT_DB);
+    lua_pushlightuserdata(L, *db);
+    return 1;
+}
+
 int lvldb_options(lua_State *L) {
     Options *optp = (Options *)lua_newuserdata(L, sizeof(Options));
     new (optp) Options();
@@ -320,10 +326,11 @@ static const struct luaL_Reg E[] = { {NULL, NULL} };
 static const luaL_Reg lvldb_leveldb_m[] = {
     {"open", lvldb_open},
     {"close", lvldb_close},
+    {"db", lvldb_db},
     {"options", lvldb_options},
     {"readOptions", lvldb_read_options},
     {"writeOptions", lvldb_write_options},
-    {"repair ", lvldb_repair},
+    {"repair", lvldb_repair},
     {"rawbatch", lvldb_raw_batch},
     {"check", lvldb_check},
     {"now", lvldb_now},
@@ -416,6 +423,7 @@ static const Xet_reg_pre write_options_setters[] = {
 static const luaL_Reg lvldb_database_m[] = {
     {"put", lvldb_database_put},
     {"get", lvldb_database_get},
+    {"db", lvldb_db},
     {"batch", lvldb_batch},
     {"close", lvldb_close},
     {"has", lvldb_database_has},
@@ -434,6 +442,7 @@ static const struct luaL_Reg lvldb_iterator_m[] = {
     {"seekToLast", lvldb_iterator_seek_to_last},
     {"valid", lvldb_iterator_valid},
     {"next", lvldb_iterator_next},
+    {"prev", lvldb_iterator_prev},
     {"key", lvldb_iterator_key},
     {"value", lvldb_iterator_val},
     {"__gc", lvldb_iterator_delete},

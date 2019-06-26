@@ -46,6 +46,12 @@ int lvldb_iterator_next(lua_State *L) {
     return 0;
 }
 
+int lvldb_iterator_prev(lua_State *L) {
+    Iterator *iter = check_iter(L);
+    iter->Prev();
+    return 0;
+}
+
 int lvldb_iterator_key(lua_State *L) {
     Iterator *iter = check_iter(L);
     Slice key = iter->key();

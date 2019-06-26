@@ -38,9 +38,10 @@ int lvldb_database_get(lua_State *L) {
         } else {
             lua_pushlstring(L, value.c_str(), value.size());
         }
-        return 1;
+    } else {
+        lua_pushnil(L);
     }
-    return 0;
+    return 1;
 }
 
 int lvldb_database_has(lua_State *L) {
