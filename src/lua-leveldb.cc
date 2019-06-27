@@ -198,7 +198,7 @@ lb64encode(lua_State *L) {
 	static const char* encoding = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 	size_t sz = 0;
 	const uint8_t * text = (const uint8_t *)luaL_checklstring(L, 1, &sz);
-	int encode_sz = (sz + 2)/3*4;
+	int encode_sz = int((sz + 2)/3*4);
 	char tmp[SMALL_CHUNK];
 	char *buffer = tmp;
 	if (encode_sz > SMALL_CHUNK) {
@@ -214,7 +214,7 @@ lb64encode(lua_State *L) {
 		buffer[j+3] = encoding[(v) & 0x3f];
 		j+=4;
 	}
-	int padding = sz-i;
+	int padding = int(sz-i);
 	uint32_t v;
 	switch(padding) {
 	case 1 :
@@ -253,7 +253,7 @@ static int
 lb64decode(lua_State *L) {
 	size_t sz = 0;
 	const uint8_t * text = (const uint8_t *)luaL_checklstring(L, 1, &sz);
-	int decode_sz = (sz+3)/4*3;
+	int decode_sz = int((sz+3)/4*3);
 	char tmp[SMALL_CHUNK];
 	char *buffer = tmp;
 	if (decode_sz > SMALL_CHUNK) {
@@ -345,71 +345,38 @@ static const luaL_Reg lvldb_options_meta[] = {
     {NULL, NULL} };
 
 // options getters
-static const Xet_reg_pre options_getters[] = {
-    {"createIfMissing", get_bool, offsetof(Options, create_if_missing)},
-    {"errorIfExists", get_bool, offsetof(Options, error_if_exists)},
-    {"paranoidChecks", get_bool, offsetof(Options, paranoid_checks)},
-    {"writeBufferSize", get_size, offsetof(Options, write_buffer_size)},
-    {"maxOpenFiles", get_int, offsetof(Options, max_open_files)},
-    {"blockSize", get_size, offsetof(Options, block_size)},
-    {"blockRestartInterval", get_int, offsetof(Options, block_restart_interval)},
-    {"maxFileSize", get_int, offsetof(Options, max_file_size)},
-    {NULL, NULL} };
-
-// options setters
-static const Xet_reg_pre options_setters[] = {
-    {"createIfMissing", set_bool, offsetof(Options, create_if_missing)},
-    {"errorIfExists", set_bool, offsetof(Options, error_if_exists)},
-    {"paranoidChecks", set_bool, offsetof(Options, paranoid_checks)},
-    {"writeBufferSize", set_size, offsetof(Options, write_buffer_size)},
-    {"maxOpenFiles", set_int, offsetof(Options, max_open_files)},
-    {"blockSize", set_size, offsetof(Options, block_size)},
-    {"blockRestartInterval", set_int, offsetof(Options, block_restart_interval)},
-    {"maxFileSize", set_int, offsetof(Options, max_file_size)},
+static const Xet_reg_pre options_getsets[] = {
+    {"createIfMissing", get_bool, set_bool, offsetof(Options, create_if_missing)},
+    {"errorIfExists", get_bool, set_bool, offsetof(Options, error_if_exists)},
+    {"paranoidChecks", get_bool, set_bool, offsetof(Options, paranoid_checks)},
+    {"writeBufferSize", get_size, set_size, offsetof(Options, write_buffer_size)},
+    {"maxOpenFiles", get_int, set_int, offsetof(Options, max_open_files)},
+    {"blockSize", get_size, set_size, offsetof(Options, block_size)},
+    {"blockRestartInterval", get_int, set_int, offsetof(Options, block_restart_interval)},
+    {"maxFileSize", get_int, set_int, offsetof(Options, max_file_size)},
     {NULL, NULL} };
 
 // read options methods
 static const luaL_Reg lvldb_read_options_m[] = {
-    {NULL, NULL} };
-
-// read options meta-methods
-static const luaL_Reg lvldb_read_options_meta[] = {
     {"__tostring", lvldb_read_options_tostring},
     {NULL, NULL} };
 
 // read options getters
-static const Xet_reg_pre read_options_getters[] = {
-    {"verifyChecksum", get_bool, offsetof(MyReadOptions, verify_checksums)},
-    {"fillCache", get_bool, offsetof(MyReadOptions, fill_cache)},
-    {"decompress", get_bool, offsetof(MyReadOptions, UnCompress)},
-    {NULL, NULL} };
-
-// read options setters
-static const Xet_reg_pre read_options_setters[] = {
-    {"verifyChecksum", set_bool, offsetof(MyReadOptions, verify_checksums)},
-    {"fillCache", set_bool, offsetof(MyReadOptions, fill_cache)},
-    {"decompress", set_bool, offsetof(MyReadOptions, UnCompress)},
+static const Xet_reg_pre read_options_getsets[] = {
+    {"verifyChecksum", get_bool, set_bool, offsetof(MyReadOptions, verify_checksums)},
+    {"fillCache", get_bool, set_bool, offsetof(MyReadOptions, fill_cache)},
+    {"decompress", get_bool, set_bool, offsetof(MyReadOptions, UnCompress)},
     {NULL, NULL} };
 
 // write options methods
 static const luaL_Reg lvldb_write_options_m[] = {
-    {NULL, NULL} };
-
-// write options meta-methods
-static const luaL_Reg lvldb_write_options_meta[] = {
     {"__tostring", lvldb_write_options_tostring},
     {NULL, NULL} };
 
 // write options getters
-static const Xet_reg_pre write_options_getters[] = {
-    {"sync", get_bool, offsetof(MyWriteOptions, sync)},
-    {"compress", get_bool, offsetof(MyWriteOptions, Compress)},
-    {NULL, NULL} };
-
-// write options setters
-static const Xet_reg_pre write_options_setters[] = {
-    {"sync", set_bool, offsetof(MyWriteOptions, sync)},
-    {"compress", set_bool, offsetof(MyWriteOptions, Compress)},
+static const Xet_reg_pre write_options_getsets[] = {
+    {"sync", get_bool, set_bool, offsetof(MyWriteOptions, sync)},
+    {"compress", get_bool, set_bool, offsetof(MyWriteOptions, Compress)},
     {NULL, NULL} };
 
 // database methods
@@ -485,9 +452,9 @@ extern "C"
 
         // initialize meta-tables methods
         init_metatable(L, LVLDB_MT_DB, lvldb_database_m);
-        init_complex_metatable(L, LVLDB_MT_OPT, lvldb_options_m, lvldb_options_meta, options_getters, options_setters);
-        init_complex_metatable(L, LVLDB_MT_ROPT, lvldb_read_options_m, lvldb_read_options_meta, read_options_getters, read_options_setters);
-        init_complex_metatable(L, LVLDB_MT_WOPT, lvldb_write_options_m, lvldb_write_options_meta, write_options_getters, write_options_setters);
+        init_metatable(L, LVLDB_MT_OPT, lvldb_options_m, options_getsets);
+        init_metatable(L, LVLDB_MT_ROPT, lvldb_read_options_m, read_options_getsets);
+        init_metatable(L, LVLDB_MT_WOPT, lvldb_write_options_m, write_options_getsets);
         init_metatable(L, LVLDB_MT_ITER, lvldb_iterator_m);
         init_metatable(L, LVLDB_MT_BATCH, lvldb_batch_m);
         init_metatable(L, LVLDB_MT_RAW_BATCH, lvldb_raw_batch_m);
